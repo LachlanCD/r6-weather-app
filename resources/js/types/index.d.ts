@@ -41,3 +41,14 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface ForecastDay {
+    temp: number;
+    max_temp: number;
+    min_temp: number;
+}
+
+export interface ForecastResponse {
+    city: string;
+    data: ForecastDay[];
+}
