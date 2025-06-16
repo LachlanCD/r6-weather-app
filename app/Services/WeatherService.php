@@ -13,11 +13,25 @@ class WeatherService
             'city' => $city,
         ]);
 
-        if ($response->successful()) {
-            return $response->json();
+        if ($response->failed()) {
+            return null;
         }
 
-        return null;
+        $data = $response->json();
+
+        $forecastDays = collect($data['data'])
+            ->take(5)
+            ->map(function ($day) {
+                return [
+                    'temp' => $day['temp'],
+                    'max_temp' => $day['max_temp'],
+                    'min_temp' => $day['min_temp'],
+                ];
+            })
+            ->toArray();
+        return [
+            'city' => ucwords($city),
+            'data' => $forecastDays,
+        ];
     }
 }
-
