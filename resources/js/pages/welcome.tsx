@@ -1,9 +1,7 @@
-import { type SharedData, ForecastResponse } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import React, { useState, useEffect } from 'react';
+import { type  ForecastResponse } from '@/types';
+import { useState, useEffect } from 'react';
 
 export default function Welcome() {
-    const { auth } = usePage<SharedData>().props;
     const [city, setCity] = useState<string>('');
     const [forecast, setForecast] = useState<ForecastResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
