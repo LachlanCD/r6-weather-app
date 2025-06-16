@@ -40,6 +40,8 @@ class Forecast extends Command
             $cities = array_map('trim', explode(',', $input));
         }
 
+        $rows = [];
+
         foreach ($cities as $city) {
             $data = $weatherService->getForecast($city);
 
