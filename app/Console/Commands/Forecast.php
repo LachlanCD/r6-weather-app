@@ -54,7 +54,7 @@ class Forecast extends Command
             }
 
             // Format each of the 5 days
-            $days = array_slice($data['data'], 0, 5); // Limit to 5 days
+            $days = $data['data'];
             $daySummaries = [];
 
             foreach ($days as $day) {
@@ -71,7 +71,7 @@ class Forecast extends Command
                 $daySummaries[] = 'No Data';
             }
 
-            $cityName = ucwords(strtolower($city));
+            $cityName = $data['city'];
             $rows[] = array_merge([$cityName], $daySummaries);
         }
         $this->table(
