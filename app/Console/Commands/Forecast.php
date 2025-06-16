@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Services\WeatherService;
 
 class Forecast extends Command
 {
@@ -18,36 +19,59 @@ class Forecast extends Command
      *
      * @var string
      */
-    protected $description = 'Print the forecast for one or more cities for the next 5 days';
-
-    protected array $allowedCities = [
-        'Brisbane',
-        'Gold Coast',
-        'Sunshine Coast',
-    ];
+    protected $description = 'Fetch 5-day weather forecast for given cities';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(WeatherService $weatherService)
     {
-        $cities = $this -> argument('cities');
+        $cities = $this->argument('cities');
 
         if (empty($cities)) {
-            $this -> info("No cities provided.");
-            return;
-        }
+            $input = $this->ask('No cities provided. Please enter city names (comma separated)');
 
-        $invalidCities = array_diff($cities, $this -> allowedCities);
+            if (!$input) {
+                $this->error('No cities entered. Exiting.');
+                return;
+            }
 
-        if (!empty($invalidCities)) {
-            $this -> error('Invalid cities: ' . implode(', ', $invalidCities));
-            $this -> info('Allowed cities: ' . implode(', ', $this -> allowedCities));
-            return;
+            // Split by comma and trim whitespace
+            $cities = array_map('trim', explode(',', $input));
         }
 
         foreach ($cities as $city) {
-            $this -> line("Forecast for: $city");
+            $data = $weatherService->getForecast($city);
+
+            if (!$data || empty($data['data'])) {
+                $this->error("Could not fetch forecast for {$city}.");
+                continue;
+            }
+
+            // Format each of the 5 days
+            $days = array_slice($data['data'], 0, 5); // Limit to 5 days
+            $daySummaries = [];
+
+            foreach ($days as $day) {
+                $avg = $day['temp'] ?? 'N/A';
+                $max = $day['max_temp'] ?? 'N/A';
+                $min = $day['min_temp'] ?? 'N/A';
+
+                $summary = "Avg: {$avg}, Max: {$max}, Low: {$min}";
+                $daySummaries[] = $summary;
+            }
+
+            // Pad if less than 5 days
+            while (count($daySummaries) < 5) {
+                $daySummaries[] = 'No Data';
+            }
+
+            $cityName = ucwords(strtolower($city));
+            $rows[] = array_merge([$cityName], $daySummaries);
         }
+        $this->table(
+            ['City', 'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+            $rows
+        );
     }
 }
