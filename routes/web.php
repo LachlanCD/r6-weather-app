@@ -13,7 +13,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
-Route::get('/api/weather/{city}', [\App\Http\Controllers\WeatherController::class, 'getWeather']);
-
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
