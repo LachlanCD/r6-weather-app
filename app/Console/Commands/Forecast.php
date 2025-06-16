@@ -29,7 +29,10 @@ class Forecast extends Command
         $cities = $this->argument('cities');
 
         if (empty($cities)) {
-            $input = $this->ask('No cities provided. Please enter city names (comma separated)');
+            $input = $this->anticipate(
+                'No cities provided. Please enter city names (comma separated)',
+                ['Brisbane', 'Gold Coast', 'Sunshine Coast']
+            );
 
             if (!$input) {
                 $this->error('No cities entered. Exiting.');
