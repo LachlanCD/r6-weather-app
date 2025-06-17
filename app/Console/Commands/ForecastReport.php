@@ -36,20 +36,24 @@ class ForecastReport extends Command
                 $this->error("No forecast data for $city");
                 continue;
             }
-
-            $report[] = "Forecast for $city:\n";
-            foreach ($forecast['data'] as $i => $day) {
-                $dayNum = $i + 1;
-                $line = "  Day $dayNum: Avg: {$day['temp']}, Max: {$day['max_temp']}, Min: {$day['min_temp']}";
-                $report[] = $line;
-            }
-
-            $report[] = ""; // blank line between cities
+            $report[] = $forecast;
         }
 
-        $filename = 'daily_forecast_' . now()->format('Y-m-d') . '.txt';
-        Storage::put("reports/$filename", implode("\n", $report));
+        $newReport = [
+            'generated_at' => now()->toDateTimeString(),
+            'cities' => $report,
+        ];
 
-        $this->info("Forecast saved to storage/app/private/reports/$filename");
+        $filename = 'reports/all_reports.json';
+
+        $existing = [];
+        if (Storage::exists($filename)) {
+            $existing = json_decode(Storage::get($filename), true) ?? [];
+        }
+
+        $existing[] = $newReport;
+
+        Storage::put($filename, json_encode($existing, JSON_PRETTY_PRINT));
+        $this->info('Appended generated report to all_reports.json');
     }
 }
