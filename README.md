@@ -74,6 +74,12 @@ npm run dev
 ```
     to serve the frontend
 
+### Forecast Page
+This page allows the user to select from Brisbane, Gold Coast and Sunshine Coast in a dropdown to view their current forecast.
+
+### Reports Page
+This page allows the user to view previously generated reports from the Daily Report command, see below.
+
 ## Daily Report
 Each day, the app runs a scheduled task that:
 
@@ -97,7 +103,7 @@ Add:
 ```
 
 ## Assumptions
-I assumed that the automatically generated reports were separate from the forecast command and would need to be saved, this is currently done with a simple text file, however this could be transferred to a .csv or database to enable displaying on the react frontend in an overview page.
+I assumed that the automatically generated reports were separate from the forecast command and would need to be saved, this is currently done with a simple json file and is rendered in the React app under Reports. This could be extended by utilising a database, or by spliting the files to be timestamped rather than parsing everything and bloating the json being parsed through React.
 The React frontend simply queries the api through the Laravel backend to retrieve the most up to date data when a city is selected from the dropdown.
 The console command does not limit the cities that can be queried as it was not specified. however, this can easily be added through the use of an array for allowed cities which gets compared to the entered cities through a array_diff and returned to the user as an error. 
 
